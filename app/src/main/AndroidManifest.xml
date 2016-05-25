@@ -43,26 +43,6 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".activity.DetailActivity"
-            android:label="@string/title_activity_detail"
-            android:parentActivityName=".activity.MainActivity"
-            android:theme="@style/AppTheme.Details">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.MainActivity" />
-        </activity>
-
-        <activity
-            android:name=".activity.SettingsActivity"
-            android:label="@string/title_activity_settings"
-            android:parentActivityName=".activity.MainActivity"
-            android:theme="@style/SettingsTheme">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.MainActivity" />
-        </activity>
-
         <provider
             android:authorities="@string/content_authority"
             android:name=".data.WeatherProvider"

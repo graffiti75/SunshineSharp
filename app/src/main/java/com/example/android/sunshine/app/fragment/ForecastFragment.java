@@ -15,22 +15,18 @@
  */
 package com.example.android.sunshine.app.fragment;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -63,7 +59,6 @@ public class ForecastFragment extends Fragment implements
 
     public static final String LOG_TAG = "Sunshine";
 
-    private static final String SELECTED_KEY = "selected_position";
     private static final int FORECAST_LOADER = 0;
 
     // For the forecast view we're showing only a small subset of the stored data.
@@ -103,25 +98,10 @@ public class ForecastFragment extends Fragment implements
 
     private ForecastAdapter mForecastAdapter;
     private RecyclerView mRecyclerView;
-    private boolean mUseTodayLayout, mAutoSelectView;
+    private boolean mAutoSelectView;
     private int mChoiceMode;
     private boolean mHoldForTransition;
     private long mInitialSelectedDate = -1;
-
-    //--------------------------------------------------
-    // Callback
-    //--------------------------------------------------
-
-    /**
-     * A callback interface that all activities containing this fragment must implement.
-     * This mechanism allows activities to be notified of item selections.
-     */
-    public interface Callback {
-        /**
-         * DetailFragmentCallback for when an item has been selected.
-         */
-        void onItemSelected(Uri dateUri, ForecastAdapter.ForecastAdapterViewHolder vh);
-    }
 
     //--------------------------------------------------
     // Constructor
@@ -189,55 +169,11 @@ public class ForecastFragment extends Fragment implements
         mForecastAdapter = new ForecastAdapter(getActivity(),
             new ForecastAdapter.ForecastAdapterOnClickHandler() {
             @Override
-            public void onClick(Long date, ForecastAdapter.ForecastAdapterViewHolder vh) {
-                Log.i(LOG_TAG, "ForecastFragment.onCreateView().onClick().");
-                String locationSetting = Utility.getPreferredLocation(getActivity());
-                ((Callback) getActivity()).onItemSelected(WeatherContract
-                    .WeatherEntry.buildWeatherLocationWithDate(locationSetting, date), vh);
-            }
+            public void onClick(Long date, ForecastAdapter.ForecastAdapterViewHolder vh) {}
         }, emptyView, mChoiceMode);
 
         // Specify an adapter (see also next example).
         mRecyclerView.setAdapter(mForecastAdapter);
-
-        final View parallaxView = rootView.findViewById(R.id.parallax_bar);
-        if (null != parallaxView) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-                    @Override
-                    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                        super.onScrolled(recyclerView, dx, dy);
-                        Log.i(LOG_TAG, "ForecastFragment.onCreateView().addOnScrollListener() -> Parallax view case.");
-                        int max = parallaxView.getHeight();
-                        if (dy > 0) {
-                            parallaxView.setTranslationY(Math.max(-max, parallaxView.getTranslationY() - dy / 2));
-                        } else {
-                            parallaxView.setTranslationY(Math.min(0, parallaxView.getTranslationY() - dy / 2));
-                        }
-                    }
-                });
-            }
-        }
-
-        final AppBarLayout appbarView = (AppBarLayout)rootView.findViewById(R.id.appbar);
-        if (null != appbarView) {
-            ViewCompat.setElevation(appbarView, 0);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-                    @Override
-                    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                        Log.i(LOG_TAG, "ForecastFragment.onCreateView().addOnScrollListener() -> App bar case.");
-                        if (0 == mRecyclerView.computeVerticalScrollOffset()) {
-                            appbarView.setElevation(0);
-                        } else {
-                            appbarView.setElevation(appbarView.getTargetElevation());
-                        }
-                    }
-                });
-            }
-        }
 
         // If there's instance state, mine it for useful information.
         // The end-goal here is that the user never knows that turning their device sideways
@@ -247,7 +183,6 @@ public class ForecastFragment extends Fragment implements
         if (savedInstanceState != null) {
             mForecastAdapter.onRestoreInstanceState(savedInstanceState);
         }
-        mForecastAdapter.setUseTodayLayout(mUseTodayLayout);
         return rootView;
     }
 
@@ -335,14 +270,6 @@ public class ForecastFragment extends Fragment implements
                         + geoLocation.toString() + ", no receiving apps installed!");
                 }
             }
-        }
-    }
-
-    public void setUseTodayLayout(boolean useTodayLayout) {
-        Log.i(LOG_TAG, "ForecastFragment.setUseTodayLayout().");
-        mUseTodayLayout = useTodayLayout;
-        if (mForecastAdapter != null) {
-            mForecastAdapter.setUseTodayLayout(mUseTodayLayout);
         }
     }
 
