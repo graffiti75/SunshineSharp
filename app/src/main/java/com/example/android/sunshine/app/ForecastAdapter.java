@@ -42,15 +42,10 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
     //--------------------------------------------------
 
     public static final String LOG_TAG = "Sunshine";
-    private static final int VIEW_TYPE_TODAY = 0;
-    private static final int VIEW_TYPE_FUTURE_DAY = 1;
 
     //--------------------------------------------------
     // Attributes
     //--------------------------------------------------
-
-    // Flag to determine if we want to use a separate view for "today".
-    private boolean mUseTodayLayout = true;
 
     private Cursor mCursor;
     final private Context mContext;
@@ -67,8 +62,6 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
      */
     public class ForecastAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public final ImageView mIconView;
-        public final TextView mDateView;
-        public final TextView mDescriptionView;
         public final TextView mHighTempView;
         public final TextView mLowTempView;
 
@@ -76,8 +69,6 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
             super(view);
             Log.i(LOG_TAG, "ForecastAdapter.ForecastAdapterViewHolder().");
             mIconView = (ImageView) view.findViewById(R.id.list_item_icon);
-            mDateView = (TextView) view.findViewById(R.id.list_item_date_textview);
-            mDescriptionView = (TextView) view.findViewById(R.id.list_item_forecast_textview);
             mHighTempView = (TextView) view.findViewById(R.id.list_item_high_textview);
             mLowTempView = (TextView) view.findViewById(R.id.list_item_low_textview);
             view.setOnClickListener(this);
@@ -98,7 +89,7 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
     // Interface
     //--------------------------------------------------
 
-    public static interface ForecastAdapterOnClickHandler {
+    public interface ForecastAdapterOnClickHandler {
         void onClick(Long date, ForecastAdapterViewHolder vh);
     }
 
@@ -128,17 +119,7 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
     public ForecastAdapterViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         Log.i(LOG_TAG, "ForecastAdapter.onCreateViewHolder().");
         if (viewGroup instanceof RecyclerView) {
-            int layoutId = -1;
-            switch (viewType) {
-                case VIEW_TYPE_TODAY: {
-                    layoutId = R.layout.list_item_forecast_today;
-                    break;
-                }
-                case VIEW_TYPE_FUTURE_DAY: {
-                    layoutId = R.layout.list_item_forecast;
-                    break;
-                }
-            }
+            int layoutId = R.layout.list_item_forecast_today;
             View view = LayoutInflater.from(viewGroup.getContext()).inflate(layoutId, viewGroup, false);
             view.setFocusable(true);
             return new ForecastAdapterViewHolder(view);
@@ -152,19 +133,7 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
         Log.i(LOG_TAG, "ForecastAdapter.onBindViewHolder().");
         mCursor.moveToPosition(position);
         int weatherId = mCursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID);
-        int defaultImage;
-        boolean useLongToday;
-
-        switch (getItemViewType(position)) {
-            case VIEW_TYPE_TODAY:
-                defaultImage = Utility.getArtResourceForWeatherCondition(weatherId);
-                useLongToday = true;
-                break;
-            default:
-                defaultImage = Utility.getIconResourceForWeatherCondition(weatherId);
-                useLongToday = false;
-        }
-
+        int defaultImage = Utility.getIconResourceForWeatherCondition(weatherId);
         if (Utility.usingLocalGraphics(mContext)) {
             forecastAdapterViewHolder.mIconView.setImageResource(defaultImage);
         } else {
@@ -178,19 +147,6 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
         // This enables better animations. even if we lose state due to a device rotation,
         // the animator can use this to re-find the original view.
         ViewCompat.setTransitionName(forecastAdapterViewHolder.mIconView, "iconView" + position);
-
-        // Read date from cursor.
-        long dateInMillis = mCursor.getLong(ForecastFragment.COL_WEATHER_DATE);
-
-        // Find TextView and set formatted date on it.
-        forecastAdapterViewHolder.mDateView.setText(Utility.getFriendlyDayString(mContext, dateInMillis, useLongToday));
-
-        // Read weather forecast from cursor.
-        String description = Utility.getStringForWeatherCondition(mContext, weatherId);
-
-        // Find TextView and set weather forecast on it.
-        forecastAdapterViewHolder.mDescriptionView.setText(description);
-        forecastAdapterViewHolder.mDescriptionView.setContentDescription(mContext.getString(R.string.a11y_forecast, description));
 
         // For accessibility, we don't want a content description for the icon field because the
         // information is repeated in the description view and the icon is not individually selectable.
@@ -211,14 +167,9 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
     }
 
     @Override
-    public int getItemViewType(int position) {
-        return (position == 0 && mUseTodayLayout) ? VIEW_TYPE_TODAY : VIEW_TYPE_FUTURE_DAY;
-    }
-
-    @Override
     public int getItemCount() {
         if (null == mCursor) return 0;
-        return mCursor.getCount();
+        return 1;
     }
 
     //--------------------------------------------------
@@ -233,11 +184,6 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
     public void onSaveInstanceState(Bundle outState) {
         Log.i(LOG_TAG, "ForecastAdapter.onSaveInstanceState().");
         mICM.onSaveInstanceState(outState);
-    }
-
-    public void setUseTodayLayout(boolean useTodayLayout) {
-        Log.i(LOG_TAG, "ForecastAdapter.setUseTodayLayout().");
-        mUseTodayLayout = useTodayLayout;
     }
 
     public int getSelectedItemPosition() {

@@ -16,13 +16,10 @@
 package com.example.android.sunshine.app.fragment;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -32,9 +29,6 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -49,9 +43,7 @@ import com.example.android.sunshine.app.data.WeatherContract;
 /**
  * Encapsulates fetching the forecast and displaying it as a {@link android.support.v7.widget.RecyclerView} layout.
  */
-public class ForecastFragment extends Fragment implements
-    LoaderManager.LoaderCallbacks<Cursor>,
-    SharedPreferences.OnSharedPreferenceChangeListener {
+public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     //--------------------------------------------------
     // Constants
@@ -119,22 +111,6 @@ public class ForecastFragment extends Fragment implements
         super.onCreate(savedInstanceState);
         // Add this line in order for this fragment to handle menu events.
         setHasOptionsMenu(true);
-    }
-
-    @Override
-    public void onResume() {
-        Log.i(LOG_TAG, "ForecastFragment.onResume().");
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        sp.registerOnSharedPreferenceChangeListener(this);
-        super.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        Log.i(LOG_TAG, "ForecastFragment.onPause().");
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        sp.unregisterOnSharedPreferenceChangeListener(this);
-        super.onPause();
     }
 
     @Override
@@ -216,29 +192,6 @@ public class ForecastFragment extends Fragment implements
     }
 
     //--------------------------------------------------
-    // Menu
-    //--------------------------------------------------
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        Log.i(LOG_TAG, "ForecastFragment.onCreateOptionsMenu().");
-        inflater.inflate(R.menu.forecastfragment, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        Log.i(LOG_TAG, "ForecastFragment.onOptionsItemSelected().");
-        // Handle action bar item clicks here. The action bar will automatically handle clicks on
-        // the Home/Up button, so long as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_map) {
-            openPreferredLocationInMap();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    //--------------------------------------------------
     // Methods
     //--------------------------------------------------
 
@@ -246,31 +199,6 @@ public class ForecastFragment extends Fragment implements
     public void onLocationChanged() {
         Log.i(LOG_TAG, "ForecastFragment.onLocationChanged().");
         getLoaderManager().restartLoader(FORECAST_LOADER, null, this);
-    }
-
-    private void openPreferredLocationInMap() {
-        Log.i(LOG_TAG, "ForecastFragment.openPreferredLocationInMap().");
-        // Using the URI scheme for showing a location found on a map.  This super-handy intent can
-        // is detailed in the "Common Intents" page of Android's developer site:
-        // http://developer.android.com/guide/components/intents-common.html#Maps
-        if (null != mForecastAdapter) {
-            Cursor c = mForecastAdapter.getCursor();
-            if (null != c) {
-                c.moveToPosition(0);
-                String posLat = c.getString(COL_COORD_LAT);
-                String posLong = c.getString(COL_COORD_LONG);
-                Uri geoLocation = Uri.parse("geo:" + posLat + "," + posLong);
-
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(geoLocation);
-                if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
-                    startActivity(intent);
-                } else {
-                    Log.i(LOG_TAG, "ForecastFragment.openPreferredLocationInMap() -> Couldn't call "
-                        + geoLocation.toString() + ", no receiving apps installed!");
-                }
-            }
-        }
     }
 
     public void setInitialSelectedDate(long initialSelectedDate) {
@@ -367,17 +295,5 @@ public class ForecastFragment extends Fragment implements
     public void onLoaderReset(Loader<Cursor> loader) {
         Log.i(LOG_TAG, "ForecastFragment.onLoaderReset().");
         mForecastAdapter.swapCursor(null);
-    }
-
-    //--------------------------------------------------
-    // SharedPreferences OnSharedPreferenceChangeListener
-    //--------------------------------------------------
-
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        Log.i(LOG_TAG, "ForecastFragment.onSharedPreferenceChanged().");
-        if (key.equals(getString(R.string.pref_location_status_key))) {
-            updateEmptyView();
-        }
     }
 }
