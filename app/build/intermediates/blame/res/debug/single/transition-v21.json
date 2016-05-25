@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "/Users/rodrigo/git/Nanodegree/SunshineSharp/app/build/intermediates/res/merged/debug/transition-v21/details_window_enter_transition.xml",
+        "source": "/Users/rodrigo/git/Nanodegree/SunshineSharp/app/src/main/res/transition-v21/details_window_enter_transition.xml"
+    },
+    {
+        "merged": "/Users/rodrigo/git/Nanodegree/SunshineSharp/app/build/intermediates/res/merged/debug/transition-v21/details_window_return_transition.xml",
+        "source": "/Users/rodrigo/git/Nanodegree/SunshineSharp/app/src/main/res/transition-v21/details_window_return_transition.xml"
+    }
+]
