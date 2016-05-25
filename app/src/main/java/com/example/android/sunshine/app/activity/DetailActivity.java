@@ -18,9 +18,8 @@ package com.example.android.sunshine.app.activity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import com.example.android.sunshine.app.fragment.DetailFragment;
 import com.example.android.sunshine.app.R;
-
+import com.example.android.sunshine.app.fragment.DetailFragment;
 
 public class DetailActivity extends AppCompatActivity {
 

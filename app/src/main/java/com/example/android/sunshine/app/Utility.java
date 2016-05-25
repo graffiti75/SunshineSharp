@@ -22,11 +22,7 @@ import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
 import android.text.format.Time;
 
-import com.example.android.sunshine.app.sync.SunshineSyncAdapter;
-
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Locale;
 
 public class Utility {
@@ -36,16 +32,6 @@ public class Utility {
     public static boolean isLocationLatLonAvailable(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         return prefs.contains(context.getString(R.string.pref_location_latitude)) && prefs.contains(context.getString(R.string.pref_location_longitude));
-    }
-
-    public static float getLocationLatitude(Context context) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        return prefs.getFloat(context.getString(R.string.pref_location_latitude), DEFAULT_LATLONG);
-    }
-
-    public static float getLocationLongitude(Context context) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        return prefs.getFloat(context.getString(R.string.pref_location_longitude), DEFAULT_LATLONG);
     }
 
     public static String getPreferredLocation(Context context) {
@@ -66,11 +52,6 @@ public class Utility {
         }
         // For presentation, assume the user doesn't care about tenths of a degree.
         return String.format(context.getString(R.string.format_temperature), temperature);
-    }
-
-    static String formatDate(long dateInMilliseconds) {
-        Date date = new Date(dateInMilliseconds);
-        return DateFormat.getDateInstance().format(date);
     }
 
     // Format used for storing dates in the database.  ALso used for converting those strings
@@ -507,42 +488,6 @@ public class Utility {
         return context.getString(stringId);
     }
 
-    /*
-     * Helper method to provide the correct image according to the weather condition id returned
-     * by the OpenWeatherMap call.
-     *
-     * @param weatherId from OpenWeatherMap API response
-     * @return A string URL to an appropriate image or null if no mapping is found
-     */
-    public static String getImageUrlForWeatherCondition(int weatherId) {
-        // Based on weather code data found at:
-        // http://bugs.openweathermap.org/projects/api/wiki/Weather_Condition_Codes
-        if (weatherId >= 200 && weatherId <= 232) {
-            return "http://upload.wikimedia.org/wikipedia/commons/2/28/Thunderstorm_in_Annemasse,_France.jpg";
-        } else if (weatherId >= 300 && weatherId <= 321) {
-            return "http://upload.wikimedia.org/wikipedia/commons/a/a0/Rain_on_leaf_504605006.jpg";
-        } else if (weatherId >= 500 && weatherId <= 504) {
-            return "http://upload.wikimedia.org/wikipedia/commons/6/6c/Rain-on-Thassos.jpg";
-        } else if (weatherId == 511) {
-            return "http://upload.wikimedia.org/wikipedia/commons/b/b8/Fresh_snow.JPG";
-        } else if (weatherId >= 520 && weatherId <= 531) {
-            return "http://upload.wikimedia.org/wikipedia/commons/6/6c/Rain-on-Thassos.jpg";
-        } else if (weatherId >= 600 && weatherId <= 622) {
-            return "http://upload.wikimedia.org/wikipedia/commons/b/b8/Fresh_snow.JPG";
-        } else if (weatherId >= 701 && weatherId <= 761) {
-            return "http://upload.wikimedia.org/wikipedia/commons/e/e6/Westminster_fog_-_London_-_UK.jpg";
-        } else if (weatherId == 761 || weatherId == 781) {
-            return "http://upload.wikimedia.org/wikipedia/commons/d/dc/Raised_dust_ahead_of_a_severe_thunderstorm_1.jpg";
-        } else if (weatherId == 800) {
-            return "http://upload.wikimedia.org/wikipedia/commons/7/7e/A_few_trees_and_the_sun_(6009964513).jpg";
-        } else if (weatherId == 801) {
-            return "http://upload.wikimedia.org/wikipedia/commons/e/e7/Cloudy_Blue_Sky_(5031259890).jpg";
-        } else if (weatherId >= 802 && weatherId <= 804) {
-            return "http://upload.wikimedia.org/wikipedia/commons/5/54/Cloudy_hills_in_Elis,_Greece_2.jpg";
-        }
-        return null;
-    }
-
     /**
      * Returns true if the network is available or about to become available.
      *
@@ -559,25 +504,12 @@ public class Utility {
     }
 
     /**
-     *
-     * @param c Context used to get the SharedPreferences
-     * @return the location status integer type
-     */
-    @SuppressWarnings("ResourceType")
-    static public @SunshineSyncAdapter.LocationStatus
-    int getLocationStatus(Context c){
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(c);
-        return sp.getInt(c.getString(R.string.pref_location_status_key), SunshineSyncAdapter.LOCATION_STATUS_UNKNOWN);
-    }
-
-    /**
      * Resets the location status.  (Sets it to SunshineSyncAdapter.LOCATION_STATUS_UNKNOWN)
      * @param c Context used to get the SharedPreferences
      */
     static public void resetLocationStatus(Context c){
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(c);
         SharedPreferences.Editor spe = sp.edit();
-        spe.putInt(c.getString(R.string.pref_location_status_key), SunshineSyncAdapter.LOCATION_STATUS_UNKNOWN);
         spe.apply();
     }
 }

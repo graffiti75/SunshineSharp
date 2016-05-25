@@ -34,9 +34,6 @@ import com.example.android.sunshine.app.Utility;
 import com.example.android.sunshine.app.data.WeatherContract;
 import com.example.android.sunshine.app.fragment.DetailFragment;
 import com.example.android.sunshine.app.fragment.ForecastFragment;
-import com.example.android.sunshine.app.sync.SunshineSyncAdapter;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 
 public class MainActivity extends AppCompatActivity implements ForecastFragment.Callback {
 
@@ -45,10 +42,8 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
     //--------------------------------------------------
 
     public static final String LOG_TAG = "Sunshine";
-//    private final String LOG_TAG = MainActivity.class.getSimpleName();
     private static final String DETAILFRAGMENT_TAG = "DFTAG";
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-    public static final String SENT_TOKEN_TO_SERVER = "sentTokenToServer";
 
     //--------------------------------------------------
     // Attributes
@@ -102,7 +97,6 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
         if (contentUri != null) {
             forecastFragment.setInitialSelectedDate(WeatherContract.WeatherEntry.getDateFromUri(contentUri));
         }
-        SunshineSyncAdapter.initializeSyncAdapter(this);
     }
 
     @Override
@@ -147,31 +141,6 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    //--------------------------------------------------
-    // Methods
-    //--------------------------------------------------
-
-    /**
-     * Check the device to make sure it has the Google Play Services APK. If
-     * it doesn't, display a dialog that allows users to download the APK from
-     * the Google Play Store or enable it in the device's system settings.
-     */
-    private boolean checkPlayServices() {
-        Log.i(LOG_TAG, "MainActivity.checkPlayServices().");
-        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
-        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
-        if (resultCode != ConnectionResult.SUCCESS) {
-            if (apiAvailability.isUserResolvableError(resultCode)) {
-                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST).show();
-            } else {
-                Log.i(LOG_TAG, "This device is not supported.");
-                finish();
-            }
-            return false;
-        }
-        return true;
     }
 
     //--------------------------------------------------

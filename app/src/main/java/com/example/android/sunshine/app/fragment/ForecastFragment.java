@@ -49,7 +49,6 @@ import com.example.android.sunshine.app.ForecastAdapter;
 import com.example.android.sunshine.app.R;
 import com.example.android.sunshine.app.Utility;
 import com.example.android.sunshine.app.data.WeatherContract;
-import com.example.android.sunshine.app.sync.SunshineSyncAdapter;
 
 /**
  * Encapsulates fetching the forecast and displaying it as a {@link android.support.v7.widget.RecyclerView} layout.
@@ -62,7 +61,6 @@ public class ForecastFragment extends Fragment implements
     // Constants
     //--------------------------------------------------
 
-//    public static final String LOG_TAG = ForecastFragment.class.getSimpleName();
     public static final String LOG_TAG = "Sunshine";
 
     private static final String SELECTED_KEY = "selected_position";
@@ -122,7 +120,7 @@ public class ForecastFragment extends Fragment implements
         /**
          * DetailFragmentCallback for when an item has been selected.
          */
-        public void onItemSelected(Uri dateUri, ForecastAdapter.ForecastAdapterViewHolder vh);
+        void onItemSelected(Uri dateUri, ForecastAdapter.ForecastAdapterViewHolder vh);
     }
 
     //--------------------------------------------------
@@ -298,10 +296,6 @@ public class ForecastFragment extends Fragment implements
         // Handle action bar item clicks here. The action bar will automatically handle clicks on
         // the Home/Up button, so long as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-//        if (id == R.id.action_refresh) {
-//            updateWeather();
-//            return true;
-//        }
         if (id == R.id.action_map) {
             openPreferredLocationInMap();
             return true;
@@ -364,23 +358,9 @@ public class ForecastFragment extends Fragment implements
         if (mForecastAdapter.getItemCount() == 0) {
             TextView tv = (TextView) getView().findViewById(R.id.recyclerview_forecast_empty);
             if (null != tv) {
-                // if cursor is empty, why? do we have an invalid location
-                int message = R.string.empty_forecast_list;
-                @SunshineSyncAdapter.LocationStatus int location = Utility.getLocationStatus(getActivity());
-                switch (location) {
-                    case SunshineSyncAdapter.LOCATION_STATUS_SERVER_DOWN:
-                        message = R.string.empty_forecast_list_server_down;
-                        break;
-                    case SunshineSyncAdapter.LOCATION_STATUS_SERVER_INVALID:
-                        message = R.string.empty_forecast_list_server_error;
-                        break;
-                    case SunshineSyncAdapter.LOCATION_STATUS_INVALID:
-                        message = R.string.empty_forecast_list_invalid_location;
-                        break;
-                    default:
-                        if (!Utility.isNetworkAvailable(getActivity())) {
-                            message = R.string.empty_forecast_list_no_network;
-                        }
+                int message = 0;
+                if (!Utility.isNetworkAvailable(getActivity())) {
+                    message = R.string.empty_forecast_list_no_network;
                 }
                 tv.setText(message);
             }

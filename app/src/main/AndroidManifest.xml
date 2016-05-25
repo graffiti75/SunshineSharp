@@ -20,14 +20,6 @@
     <!-- This permission is necessary in order for Sunshine to perform network access. -->
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <!-- Permissions required by the sync adapter -->
-    <uses-permission
-        android:name="android.permission.READ_SYNC_SETTINGS"/>
-    <uses-permission
-        android:name="android.permission.WRITE_SYNC_SETTINGS"/>
-    <uses-permission
-        android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
-
     <!-- Permissions required to make our UI more friendly -->
     <uses-permission
         android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -76,27 +68,5 @@
             android:name=".data.WeatherProvider"
             android:exported="false"
             android:syncable="true" />
-
-        <!-- SyncAdapter's dummy authentication service -->
-        <service android:name=".sync.SunshineAuthenticatorService">
-            <intent-filter>
-                <action android:name="android.accounts.AccountAuthenticator" />
-            </intent-filter>
-            <meta-data
-                android:name="android.accounts.AccountAuthenticator"
-                android:resource="@xml/authenticator" />
-        </service>
-
-        <!-- The SyncAdapter service -->
-        <service
-            android:name=".sync.SunshineSyncService"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.content.SyncAdapter" />
-            </intent-filter>
-            <meta-data
-                android:name="android.content.SyncAdapter"
-                android:resource="@xml/syncadapter" />
-        </service>
     </application>
 </manifest>

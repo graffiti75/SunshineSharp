@@ -26,14 +26,12 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.example.android.sunshine.app.R;
 import com.example.android.sunshine.app.Utility;
 import com.example.android.sunshine.app.data.WeatherContract;
-import com.example.android.sunshine.app.sync.SunshineSyncAdapter;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.model.LatLng;
@@ -123,21 +121,8 @@ public class SettingsActivity extends PreferenceActivity implements
                 preference.setSummary(listPreference.getEntries()[prefIndex]);
             }
         } else if (key.equals(getString(R.string.pref_location_key))) {
-            @SunshineSyncAdapter.LocationStatus int status = Utility.getLocationStatus(this);
-            switch (status) {
-                case SunshineSyncAdapter.LOCATION_STATUS_OK:
-                    preference.setSummary(stringValue);
-                    break;
-                case SunshineSyncAdapter.LOCATION_STATUS_UNKNOWN:
-                    preference.setSummary(getString(R.string.pref_location_unknown_description, value.toString()));
-                    break;
-                case SunshineSyncAdapter.LOCATION_STATUS_INVALID:
-                    preference.setSummary(getString(R.string.pref_location_error_description, value.toString()));
-                    break;
-                default:
-                    // Note --- if the server is down we still assume the value is valid.
-                    preference.setSummary(stringValue);
-            }
+            // Note --- if the server is down we still assume the value is valid.
+            preference.setSummary(stringValue);
         } else {
             // For other preferences, set the summary to the value's simple string representation.
             preference.setSummary(stringValue);
@@ -170,7 +155,6 @@ public class SettingsActivity extends PreferenceActivity implements
             }
 
             Utility.resetLocationStatus(this);
-            SunshineSyncAdapter.syncImmediately(this);
         } else if ( key.equals(getString(R.string.pref_units_key)) ) {
             // units have changed. update lists of weather entries accordingly
             getContentResolver().notifyChange(WeatherContract.WeatherEntry.CONTENT_URI, null);
@@ -233,7 +217,6 @@ public class SettingsActivity extends PreferenceActivity implements
                     Snackbar.make(rootView, getString(R.string.attribution_text), Snackbar.LENGTH_LONG).show();
                 }
                 Utility.resetLocationStatus(this);
-                SunshineSyncAdapter.syncImmediately(this);
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);

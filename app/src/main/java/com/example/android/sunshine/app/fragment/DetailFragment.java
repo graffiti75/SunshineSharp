@@ -49,7 +49,7 @@ import com.example.android.sunshine.app.data.WeatherContract.WeatherEntry;
 @SuppressWarnings("deprecation")
 public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final String LOG_TAG = DetailFragment.class.getSimpleName();
+    private static final String LOG_TAG = "Sunshine";
     public static final String DETAIL_URI = "URI";
     public static final String DETAIL_TRANSITION_ANIMATION = "DTA";
 
@@ -226,9 +226,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             // null is appropriate when the image is purely decorative or when the image already
             // has text describing it in the same UI component.
             mIconView.setContentDescription(getString(R.string.a11y_forecast_icon, description));
-
-            // Read high temperature from cursor and update view.
-            boolean isMetric = Utility.isMetric(getActivity());
 
             double high = data.getDouble(COL_WEATHER_MAX_TEMP);
             String highString = Utility.formatTemperature(getActivity(), high);

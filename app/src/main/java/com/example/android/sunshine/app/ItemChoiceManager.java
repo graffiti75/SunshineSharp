@@ -38,29 +38,9 @@ public class ItemChoiceManager {
 
     private RecyclerView.Adapter mAdapter;
 
-    /*
-    private RecyclerView.AdapterDataObserver mAdapterDataObserver = new RecyclerView.AdapterDataObserver() {
-        @Override
-        public void onChanged() {
-            super.onChanged();
-            if (mAdapter != null && mAdapter.hasStableIds())
-                confirmCheckedPositionsById(mAdapter.getItemCount());
-        }
-    };
-    */
-
-//    private ItemChoiceManager() {}
-
     public ItemChoiceManager(RecyclerView.Adapter adapter) {
         mAdapter = adapter;
     }
-
-    /**
-     * How many positions in either direction we will search to try to
-     * find a checked item with a stable ID that moved position across
-     * a data set change. If the item isn't found it will be unselected.
-     */
-//    private static final int CHECK_POSITION_SEARCH_DISTANCE = 20;
 
     /**
      * Running state of which positions are currently checked
@@ -153,42 +133,6 @@ public class ItemChoiceManager {
         mCheckStates.clear();
         mCheckedIdStates.clear();
     }
-
-    /*
-    private void confirmCheckedPositionsById(int oldItemCount) {
-        // Clear out the positional check states, we'll rebuild it below from IDs.
-        mCheckStates.clear();
-
-        for (int checkedIndex = 0; checkedIndex < mCheckedIdStates.size(); checkedIndex++) {
-            final long id = mCheckedIdStates.keyAt(checkedIndex);
-            final int lastPos = mCheckedIdStates.valueAt(checkedIndex);
-
-            final long lastPosId = mAdapter.getItemId(lastPos);
-            if (id != lastPosId) {
-                // Look around to see if the ID is nearby. If not, uncheck it.
-                final int start = Math.max(0, lastPos - CHECK_POSITION_SEARCH_DISTANCE);
-                final int end = Math.min(lastPos + CHECK_POSITION_SEARCH_DISTANCE, oldItemCount);
-                boolean found = false;
-                for (int searchPos = start; searchPos < end; searchPos++) {
-                    final long searchId = mAdapter.getItemId(searchPos);
-                    if (id == searchId) {
-                        found = true;
-                        mCheckStates.put(searchPos, true);
-                        mCheckedIdStates.setValueAt(checkedIndex, searchPos);
-                        break;
-                    }
-                }
-
-                if (!found) {
-                    mCheckedIdStates.delete(id);
-                    checkedIndex--;
-                }
-            } else {
-                mCheckStates.put(lastPos, true);
-            }
-        }
-    }
-    */
 
     public void onBindViewHolder(RecyclerView.ViewHolder vh, int position) {
         boolean checked = isItemChecked(position);
